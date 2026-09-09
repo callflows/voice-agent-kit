@@ -1,0 +1,26 @@
+{
+  "name": "Beispiel Voice Agent",
+  "conversation_config": {
+    "agent": {
+      "prompt": {
+        "prompt": "Du bist {{agent_name}}, ein professioneller Assistent für {{firma_name}}. Antworte höflich und professionell auf Deutsch."
+      },
+      "first_message": "Guten Tag! Hier spricht {{agent_name}} von {{firma_name}}. Wie kann ich Ihnen helfen?",
+      "language": "de",
+      "dynamic_variables": {
+        "dynamic_variable_placeholders": {
+          "agent_name": "Sarah Müller",
+          "firma_name": "Beispiel GmbH"
+        }
+      }
+    },
+    "tts": {
+      "voice_id": "<<< YOUR_VOICE_ID >>>",
+      "model_id": "eleven_v3_conversational"
+    },
+    "turn": {
+      "turn_timeout": 7,
+      "silence_end_call_timeout": -1
+    }
+  }
+}

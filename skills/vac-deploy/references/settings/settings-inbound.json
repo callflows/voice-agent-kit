@@ -1,0 +1,11 @@
+{
+  "_comment": "Use-case overlay INBOUND (service, the customer calls us). Deltas to settings-baseline.json only. turn_eagerness 'eager' (a quick reaction is wanted, the caller expects an active agent). NO voicemail_detection (not needed inbound). Soft-timeout override: patient/warm, NO example sentences (voice agents parrot few-shot examples verbatim).",
+  "conversation_config": {
+    "turn": {
+      "turn_eagerness": "eager",
+      "soft_timeout_config": {
+        "llm_generated_message_prompt_override": "You produce ONE short filler phrase for an inbound service call when the caller has been silent for a few seconds and may be thinking or looking something up. Output English only. Six words maximum. Patient and warm in tone, never impatient. Signal that you are still there and they can take their time. Do NOT repeat or paraphrase the question. Output the phrase and nothing else."
+      }
+    }
+  }
+}
