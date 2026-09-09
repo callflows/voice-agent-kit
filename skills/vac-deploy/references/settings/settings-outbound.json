@@ -1,0 +1,68 @@
+{
+  "_comment": "Use-case overlay OUTBOUND (cold outreach, we place the call). Deltas to settings-baseline.json only. turn_eagerness 'normal' (best practice: avoids cutting off a surprised person called). voicemail_detection: ElevenLabs has NO audio AMD, detection is purely LLM/transcript based -> the only lever is this description + the system prompt. A custom DE prompt is needed because the default only knows ENGLISH announcements; it uses a behavioral heuristic (monologue without reaction = recording) + German signal phrases + a false-positive bias. An empty voicemail_message = end immediately. Soft-timeout override: terse/active, NO example sentences.",
+  "conversation_config": {
+    "turn": {
+      "turn_eagerness": "normal",
+      "soft_timeout_config": {
+        "llm_generated_message_prompt_override": "You produce ONE short filler phrase for an outbound B2B call when the person called has been silent for a few seconds. Output English only. Six words maximum. Confident and polite in tone. Take the initiative back by checking they are still there or gently inviting an answer. Do NOT repeat or paraphrase the previous question or topic. Do not ask a new substantive question. Output the phrase and nothing else."
+      }
+    },
+    "agent": {
+      "prompt": {
+        "built_in_tools": {
+          "end_call": {
+            "type": "system",
+            "name": "end_call",
+            "description": "End the current call and hang up. Call this once the HUMAN conversation is genuinely over: after your final closing line (goodbye / well-wish), after an accepted opt-out, or when no reachable person can be obtained. Speak your one short closing line FIRST, then call end_call. Do NOT use this for voicemail, answering machines, Bandansagen, or IVR / touch-tone menus - those are handled by voicemail_detection (end without speaking).",
+            "response_timeout_secs": 20,
+            "disable_interruptions": false,
+            "force_pre_tool_speech": false,
+            "pre_tool_speech": "auto",
+            "assignments": [],
+            "tool_call_sound": null,
+            "tool_call_sound_behavior": "auto",
+            "tool_error_handling_mode": "auto",
+            "params": {
+              "system_tool_type": "end_call"
+            }
+          },
+          "skip_turn": {
+            "type": "system",
+            "name": "skip_turn",
+            "description": "",
+            "response_timeout_secs": 20,
+            "disable_interruptions": false,
+            "interruption_mode": "allow",
+            "force_pre_tool_speech": false,
+            "pre_tool_speech": "auto",
+            "assignments": [],
+            "tool_call_sound": null,
+            "tool_call_sound_behavior": "auto",
+            "tool_error_handling_mode": "auto",
+            "params": {
+              "system_tool_type": "skip_turn"
+            }
+          },
+          "voicemail_detection": {
+            "type": "system",
+            "name": "voicemail_detection",
+            "description": "Detect when the other side is a voicemail box, answering machine, automated recording, interactive voice menu (IVR), or network status announcement instead of a reachable human - then stop talking. Call this function as soon as you are confident it is a recording, not a live person.\n\nPRIMARY signal (language-independent, judge this first): a real person says something short and then PAUSES to let you answer, and reacts to your greeting. A recording delivers one continuous, uninterrupted monologue, ignores you, and keeps talking no matter what you say. A longer monologue with no reaction to your presence within about two seconds is a recording.\n\nDo NOT judge on the first word alone. Many mailboxes open like a human ('Hello', a name, 'Good afternoon') and only reveal themselves a sentence later ('... can't take your call right now', '... after the tone'). Wait for the full opening utterance before you decide.\n\nRecording markers (any one is a strong signal):\n- Mailbox / answering machine: 'you have reached the voicemail of ...', 'this is the answering machine of ...', 'you've reached ...'\n- Not available: 'is currently not available', 'cannot take your call right now', 'is away from the desk'\n- Prompt to leave a message: 'after the tone', 'after the beep', 'please leave a message', 'leave your name and number'\n- Company / outside business hours: 'outside our business hours', 'our office is currently closed', 'nobody is available to take your call'\n- Network / status announcement: 'the number you have dialled has not been recognised', 'this number is not in service', 'the line is busy'\n- IVR / voice menu (automated menu, NOT operable by voice): 'press 1 for ...', 'for ... press two', 'please select ...', 'you are in our automated system'. No reachable person - treat it like a recording and end the call without speaking.\n\nBefore calling: give a specific reason that quotes the exact wording you heard, or describes the monologue-without-reaction behavior.\nAfter calling: no message is left and the call ends immediately. Do NOT respond to the recording, do NOT improvise a callback, do NOT keep talking.\n\nDO NOT call this when a real person interacts with you: a short greeting FOLLOWED by a pause or a question to you ('Hello?', 'Yes, please?', 'Who is this?', a company name said briefly while waiting for your reply). When genuinely unsure between a human and a recording, ask ONE short open question first - a human answers, a recording keeps talking - then decide.",
+            "response_timeout_secs": 20,
+            "disable_interruptions": false,
+            "interruption_mode": "allow",
+            "force_pre_tool_speech": false,
+            "pre_tool_speech": "auto",
+            "assignments": [],
+            "tool_call_sound": null,
+            "tool_call_sound_behavior": "auto",
+            "tool_error_handling_mode": "auto",
+            "params": {
+              "system_tool_type": "voicemail_detection",
+              "voicemail_message": ""
+            }
+          }
+        }
+      }
+    }
+  }
+}

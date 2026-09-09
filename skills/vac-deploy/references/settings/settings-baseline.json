@@ -1,0 +1,102 @@
+{
+  "_comment": "SSOT for the agent-independent ElevenLabs settings. At deploy time apply_settings.py deep-merges this with the use-case overlay (outbound/inbound) and the agent-specific config.json. Changes here affect ALL new deploys. Empirically verified against the EU Residency API on 2026-06-04 (a single PATCH sets conversation_config + platform_settings).",
+  "conversation_config": {
+    "asr": {
+      "provider": "scribe_realtime",
+      "quality": "high"
+    },
+    "turn": {
+      "turn_model": "turn_v3",
+      "speculative_turn": true,
+      "soft_timeout_config": {
+        "timeout_seconds": 3,
+        "message": "Mm-hm...",
+        "use_llm_generated_message": true
+      }
+    },
+    "conversation": {
+      "file_input": {
+        "enabled": false
+      }
+    },
+    "tts": {
+      "model_id": "eleven_v3_conversational",
+      "expressive_mode": true
+    },
+    "agent": {
+      "prompt": {
+        "llm": "claude-haiku-4-5",
+        "reasoning_effort": null,
+        "thinking_budget": null,
+        "enable_reasoning_summary": false,
+        "temperature": 0.5,
+        "max_tokens": -1,
+        "timezone": "Europe/Berlin",
+        "built_in_tools": {
+          "end_call": {
+            "type": "system",
+            "name": "end_call",
+            "description": "",
+            "response_timeout_secs": 20,
+            "disable_interruptions": false,
+            "force_pre_tool_speech": false,
+            "pre_tool_speech": "auto",
+            "assignments": [],
+            "tool_call_sound": null,
+            "tool_call_sound_behavior": "auto",
+            "tool_error_handling_mode": "auto",
+            "params": {
+              "system_tool_type": "end_call"
+            }
+          },
+          "skip_turn": {
+            "type": "system",
+            "name": "skip_turn",
+            "description": "",
+            "response_timeout_secs": 20,
+            "disable_interruptions": false,
+            "force_pre_tool_speech": false,
+            "pre_tool_speech": "auto",
+            "assignments": [],
+            "tool_call_sound": null,
+            "tool_call_sound_behavior": "auto",
+            "tool_error_handling_mode": "auto",
+            "params": {
+              "system_tool_type": "skip_turn"
+            }
+          }
+        }
+      }
+    }
+  },
+  "platform_settings": {
+    "guardrails": {
+      "version": "1",
+      "focus": {
+        "is_enabled": true
+      },
+      "prompt_injection": {
+        "is_enabled": true
+      }
+    },
+    "call_limits": {
+      "bursting_enabled": false
+    },
+    "summary_language": "en",
+    "data_collection": {
+      "call_summary": {
+        "type": "string",
+        "description": "Write a concise, factual summary of the call in English (3-5 sentences). The audience is customers reviewing call outcomes without reading the transcript.\n\nCover:\n1. the reason for and goal of the call\n2. what the person called said and how they reacted\n3. the concrete outcome and any next steps agreed\n\nWrite in the third person, neutral, without judgement and without addressing the reader. No internal system or prompt details, no speculation about what was not said. If the conversation did not happen at all (voicemail, drop, wrong person), record that in one sentence.",
+        "enum": null,
+        "is_system_provided": false,
+        "dynamic_variable": "",
+        "constant_value": "",
+        "is_omitted": false,
+        "llm": "gemini-2.5-flash"
+      }
+    },
+    "data_collection_scopes": {
+      "call_summary": "conversation"
+    }
+  }
+}
